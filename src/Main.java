@@ -1,41 +1,57 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class Main {
-    public static  void main(String[] args) {
-        Scanner in = new Scanner(System.in);
+    static MenuItem[] menu = {
+            new MenuItem("توست شنيتسل", 8),
+            new MenuItem("توست فاهيتا", 10),
+            new MenuItem("توست نقانق", 4),
+            new MenuItem("توست نقانق مع جبنة", 5),
+            new MenuItem("توست بيتزا", 7)
+    };
 
-        MenuIteam[] menuo={
-          new MenuIteam("توست شنيتسل",8),
-          new MenuIteam("توست فاهيتا",10),
-          new MenuIteam("توست نقانق ",4),
-          new MenuIteam("توست نقانق مع جبنة ",5),
-          new MenuIteam("توست بيتزا",7)  ,
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("قائمة الطعام");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
 
-        };
-        System.out.println("************القاءمة***********");
-        for(int i=0 ; i<menuo.length;i++){
-            System.out.println((i+1)+"."+menuo[i].getInfo());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JLabel title = new JLabel("اختر الأصناف:");
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(title);
+
+        ArrayList<JCheckBox> checkBoxes = new ArrayList<>();
+        for (MenuItem item : menu) {
+            JCheckBox checkBox = new JCheckBox(item.name + " - " + item.price + " شيكل");
+            checkBoxes.add(checkBox);
+            panel.add(checkBox);
         }
-        List<MenuIteam> order = new ArrayList<>();
-        while(true) {
-            System.out.println("اختر رقم الصنف (او 0 لانهاء الطلب");
-            int choice = in.nextInt();
-            if(choice == 0) {break;}
-            if(choice>0 && choice<=menuo.length) {
-                order.add(menuo[choice-1]);
+
+        JButton orderButton = new JButton("إنهاء الطلب");
+        orderButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(orderButton);
+
+        orderButton.addActionListener(e -> {
+            StringBuilder bill = new StringBuilder("***** الفاتورة *****\n");
+            double total = 0;
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                if (checkBoxes.get(i).isSelected()) {
+                    bill.append(menu[i].name).append(": ").append(menu[i].price).append(" شيكل\n");
+                    total += menu[i].price;
+                }
             }
-            else{
-                System.out.println("الرقم المدخل غير صالح");
-            }
-        }
-        System.out.println("**********الفاتورة**********");
-        double total = 0;
-        for(MenuIteam item:order){
-            System.out.println(item.name+": "+item.price+" شيكل ");
-            total+=item.price;
-        }
-        System.out.println("المجموع: "+total + "شيكل");
+            bill.append("--------------------\n");
+            bill.append("المجموع: ").append(String.format("%.2f", total)).append(" شيكل");
+
+            JOptionPane.showMessageDialog(frame, bill.toString(), "الفاتورة", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        frame.getContentPane().add(panel);
+        frame.setVisible(true);
     }
 }
